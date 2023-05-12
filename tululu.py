@@ -7,6 +7,7 @@ from pathvalidate import sanitize_filename
 from bs4 import BeautifulSoup
 from requests import HTTPError
 from urllib.parse import urljoin, urlparse, unquote
+from tqdm import tqdm
 
 
 def check_for_redirect(response):
@@ -126,7 +127,7 @@ def main():
                         help='Конечный id')
     args = parser.parse_args()
 
-    for book_id in range(args.start_id, args.end_id + 1):
+    for book_id in tqdm(range(args.start_id, args.end_id + 1), desc='Books downloaded', ncols=0):
         try:
             print_book_info(book_id)
         except (ValueError, TypeError):

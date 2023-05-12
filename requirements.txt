@@ -2,5 +2,4 @@ beautifulsoup4==4.12.2
 lxml==4.9.2
 pathvalidate==2.5.2
 requests==2.30.0
-
-
+tqdm~=4.65.0
