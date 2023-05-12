@@ -7,7 +7,7 @@ from pathvalidate import sanitize_filename
 from bs4 import BeautifulSoup
 from requests import HTTPError
 from urllib.parse import urljoin, urlparse, unquote
-from tqdm import tqdm
+from tqdm import tqdm, trange
 
 
 def check_for_redirect(response):
@@ -116,7 +116,7 @@ def print_book_info(book_id):
     print(f'Название: {book_title}',
           f'Автор: {author}',
           f'Жанр: {", ".join(genres)}.',
-          sep='\n', end='\n\n')
+          sep='\n')
 
 
 def main():
@@ -129,9 +129,10 @@ def main():
 
     for book_id in tqdm(range(args.start_id, args.end_id + 1), desc='Books downloaded', ncols=0):
         try:
+            print(end='\n\n')
             print_book_info(book_id)
         except (ValueError, TypeError):
-            print(f'Книга c id {book_id} не найдена', end='\n\n')
+            print(f'Книга c id {book_id} не найдена')
 
 
 if __name__ == '__main__':
