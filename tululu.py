@@ -90,7 +90,7 @@ def parse_book_page(book_id):
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
 
-    title_tag = soup.find(id='content').find('h1').text
+    title_tag = soup.find('div', id='content').find('h1').text
     title = title_tag.split('::')[0].strip()
 
     author = title_tag.split('::')[1].strip()
@@ -101,7 +101,7 @@ def parse_book_page(book_id):
     comments_tags = soup.find_all('div', class_='texts')
     comments = [comment.find('span').text for comment in comments_tags]
 
-    genre_tags = soup.find(id='content').find('span', class_='d_book').find_all('a')
+    genre_tags = soup.find('div', id='content').find('span', class_='d_book').find_all('a')
     genres = list(genre.text for genre in genre_tags)
 
     book_info = {'title': title, 'comments': comments,
@@ -114,22 +114,22 @@ def print_book_info(book_id):
     book_title, genres, author = get_book(book_id)
     print(f'Название: {book_title}',
           f'Автор: {author}',
-          f'Жанр: {genres}',
+          f'Жанр: {", ".join(genres)}.',
           sep='\n', end='\n\n')
 
 
 def main():
     parser = argparse.ArgumentParser(description='Загружает книги с сайта https://tululu.org')
     parser.add_argument('start_id', type=int,
-                        help='Стартовый id книги')
+                        help='Стартовый id')
     parser.add_argument('end_id', type=int,
-                        help='Конечный id книги')
+                        help='Конечный id')
     args = parser.parse_args()
 
     for book_id in range(args.start_id, args.end_id + 1):
         try:
             print_book_info(book_id)
-        except ValueError:
+        except (ValueError, TypeError):
             print(f'Книга c id {book_id} не найдена', end='\n\n')
 
 
