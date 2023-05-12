@@ -54,14 +54,19 @@ def get_book(book_id):
     url = f'https://tululu.org/txt.php?id={book_id}'
     response = requests.get(url)
     response.raise_for_status()
+
     try:
         check_for_redirect(response)
-        book_title, img_url = get_book_info(book_id)
+        book_title, img_url, comments, genres = get_book_info(book_id)
         filename = f'{book_id}. {book_title}'
         download_txt(url, filename)
         if not check_img_exist(img_url, img_folder):
             download_image(img_url, img_folder)
-        return book_title, img_url
+        if comments:
+            download_comments(comments, book_id)
+
+        return book_title, genres
+
     except HTTPError as e:
         return str(e)
 
@@ -78,22 +83,20 @@ def get_book_info(book_id):
     img_url_tag = soup.find('div', class_='bookimage').find('img')['src']
     img_url = urljoin(url, img_url_tag)
 
-    comments_tag = soup.find_all('div', class_='texts')
+    comments_tags = soup.find_all('div', class_='texts')
     comments = []
-    for comment in comments_tag:
+    for comment in comments_tags:
         comments.append(comment.find('span').text)
 
-    download_comments(comments, book_id)
+    genre_tags = soup.find(id='content').find('span', class_='d_book').find_all('a')
+    genres = list(genre.text for genre in genre_tags)
 
-    return comments
-    # return title, img_url
+    return title, img_url, comments, genres
 
 
 def main():
-    # amount = 10
-    # for book_id in range(1, amount + 1):
-    #     print(get_book(book_id))
-    print(get_book_info(9))
+    book_title, genre = get_book(1)
+    print(f'Заголовок: {book_title}', genre, sep='\n')
 
 
 if __name__ == '__main__':
