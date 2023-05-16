@@ -72,8 +72,7 @@ def get_book(book_id):
 
 def get_book_info_page(book_id):
     url = f'https://tululu.org/b{book_id}'
-    response = requests.get(url)
-    print(888, response.is_redirect)
+    response = requests.get(url)    
     response.raise_for_status()
     return parse_book_page(response)
 
