@@ -48,7 +48,7 @@ def get_book(book_id):
     response.raise_for_status()
     check_for_redirect(response)
 
-    book = get_book_info_page(book_id)
+    book = parse_book_page(book_id)
     book_title = book['title']
     img_url = book['img']
     comments = book['comments']
@@ -70,14 +70,11 @@ def get_book(book_id):
         download_comments_from_tululu_for_book(comments, comments_path, comments_folder)
 
 
-def get_book_info_page(book_id):
+def parse_book_page(book_id):
     url = f'https://tululu.org/b{book_id}'
-    response = requests.get(url)    
+    response = requests.get(url)
     response.raise_for_status()
-    return parse_book_page(response)
 
-
-def parse_book_page(response):
     soup = BeautifulSoup(response.text, 'lxml')
 
     title_tag = soup.find('div', id='content').find('h1').text
